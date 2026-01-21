@@ -276,3 +276,10 @@ curl http://<SERVICE-URL>/health
 **Files:**
 - `k8s/deployment.yaml` - Pod deployment
 - `k8s/service.yaml` - LoadBalancer service on port 80
+
+
+## Future Improvements
+
+-  Expand dataset with more plant species and diseases
+-  Implement treatment recommendations based on detected disease
+-  Build mobile app (React Native / Flutter) with offline inference
