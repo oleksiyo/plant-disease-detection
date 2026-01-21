@@ -73,22 +73,25 @@ data/
 
 ```
 plant-disease-detection/
-├── data/                    # Dataset folder (not in repo)
-├── images/                  # Project images
+├── data/                          # Dataset folder (not in repo)
+├── images/                        # Project images
 │   └── logo.png
-├── models/                  # Saved models (created after training)
-│   ├── plant_disease_model.keras
-│   └── class_indices.json
-├── notebook.ipynb           # EDA, model selection, training experiments
-├── train.py                 # Final model training script
-├── predict.py               # Flask prediction service
-├── pyproject.toml           # Project dependencies (UV/pip)
-├── requirements.txt         # Dependencies for pip
-├── Dockerfile               # Docker container configuration
-├── .dockerignore            # Files to exclude from Docker build
-├── render.yaml              # Render.com deployment config
-├── .gitignore               # Git ignore rules
-└── README.md                # This file
+├── models/                        # Saved models (created after training)
+│   ├── plant_disease_model.keras  # Trained Keras model
+│   └── class_indices.json         # Class name mappings
+├── notebook.ipynb                 # EDA, model selection, training experiments
+├── train.py                       # Final model training script
+├── predict.py                     # Flask prediction service
+├── requirements.txt               # Python dependencies (pip)
+├── pyproject.toml                 # Project dependencies (UV)
+├── uv.lock                        # UV lock file
+├── Dockerfile                     # Docker container configuration
+├── .dockerignore                  # Files to exclude from Docker build
+├── k8s/                           # Kubernetes manifests
+│   ├── deployment.yaml            # Pod deployment
+│   └── service.yaml               # LoadBalancer service
+├── .gitignore                     # Git ignore rules
+└── README.md                      # This file
 ```
 
 ## Installation & Setup
@@ -98,14 +101,17 @@ plant-disease-detection/
 - Python 3.11+ (recommended: 3.13)
 - CUDA-capable GPU (optional, for faster training)
 
-### Option 1: Using UV (Recommended)
 
+**Clone repository**
 ```bash
-# Clone repository
 git clone https://github.com/oleksiyo/plant-disease-detection.git
 cd plant-disease-detection
+```
 
+**Create virtual environment & Activate**
+```bash
 # Create virtual environment
+
 uv venv
 
 # Activate virtual environment
@@ -113,29 +119,12 @@ uv venv
 source .venv/bin/activate
 # Windows:
 .venv\Scripts\activate
-
-# Install dependencies
-uv sync
 ```
 
-### Option 2: Using pip
+**Install dependencies**
 
 ```bash
-# Clone repository
-git clone https://github.com/oleksiyo/plant-disease-detection.git
-cd plant-disease-detection
-
-# Create virtual environment
-python -m venv .venv
-
-# Activate virtual environment
-# macOS/Linux:
-source .venv/bin/activate
-# Windows:
-.venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
+uv sync
 ```
 
 ## Usage
@@ -230,29 +219,7 @@ curl http://localhost:5000/health
 
 ## Cloud Deployment
 
-### Option 1: Deploy to Render.com (Recommended - Free Tier)
-
-1. **Push your code to GitHub** (including the trained model in `models/` folder)
-
-2. **Create account on [Render.com](https://render.com)**
-
-3. **Create New Web Service:**
-   - Click "New" → "Web Service"
-   - Connect your GitHub repository
-   - Select the repository with this project
-
-4. **Configure the service:**
-   - **Name**: `plant-disease-detection`
-   - **Region**: Choose nearest to you
-   - **Branch**: `main`
-   - **Runtime**: `Docker`
-   - **Plan**: `Free`
-
-5. **Deploy** - Render will automatically build and deploy your Docker container
-
-6. **Access your service** at: `https://plant-disease-detection-xxxx.onrender.com`
-
-### Option 2: Deploy to AWS EC2
+### Option 1: Deploy to AWS EC2
 
 ```bash
 # 1. Launch EC2 instance (Ubuntu 22.04, t2.micro for free tier)
@@ -277,6 +244,31 @@ sudo docker run -d -p 80:5000 plant-disease-detection
 # 6. Access at http://your-ec2-ip/health
 ```
 
+Option 2: Deploy to Kubernetes
+
+```bash
+# 1. Build Docker image
+docker build -t plant-disease-detection:latest .
+
+# 2. Deploy to Kubernetes
+kubectl apply -f k8s/
+
+# 3. Check status
+kubectl get pods
+kubectl get svc
+
+# 4. Get service URL (for minikube)
+minikube service plant-disease-detection --url
+
+# 5. Test
+curl http://<SERVICE-URL>/health
+```
+
+**Files:**
+- `k8s/deployment.yaml` - Pod deployment
+- `k8s/service.yaml` - LoadBalancer service on port 80
+
+---
 
 
 
@@ -288,86 +280,3 @@ sudo docker run -d -p 80:5000 plant-disease-detection
 | `/health` | GET | Health check |
 | `/predict` | POST | Predict disease from image |
 | `/classes` | GET | Get list of all disease classes |
-
-
-
-
-
-uv venv
-
-
-macOS / Linux
-
-source .venv/bin/activate
-
-
-Windows
-
-.venv\Scripts\activate
-
-
-
-## How to Run Locally and via Docker
-
-### Run Locally
-
-Clone repo:
-```
-git clone https://github.com/oleksiyo/plant-disease-detection.git
-```
-
-1.  Go to work directory
-
-```
-cd plant-disease-detection
-```
-
-
-2. Create virtual environment
-
-```
-uv venv
-```
-
-macOS / Linux
-```
-source .venv/bin/activate
-```
-
-Windows
-```
-.venv\Scripts\activate
-```
-
-3. Install dependencies
-
-```
-
-```
-
-
-4. Start the Flask API service
-
-```
-
-```
-
-or with auto realod after code changes:
-
-```
-
-```
-
-5. Health check
-
-```
-
-
-```
-
-Successful response:
-```json
-{
-  "status": "ok"
-}
-```

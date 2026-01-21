@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: plant-disease-detection
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: plant-disease-detection
+  template:
+    metadata:
+      labels:
+        app: plant-disease-detection
+    spec:
+      containers:
+        - name: plant-disease-detection
+          image: plant-disease-detection:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
