@@ -197,6 +197,15 @@ Response:
 }
 ```
 
+## API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/health` | GET | Health check |
+| `/predict` | POST | Predict disease from image |
+| `/classes` | GET | Get list of all disease classes |
+
+
 ## Docker Deployment
 
 ### Build Docker Image
@@ -267,16 +276,3 @@ curl http://<SERVICE-URL>/health
 **Files:**
 - `k8s/deployment.yaml` - Pod deployment
 - `k8s/service.yaml` - LoadBalancer service on port 80
-
----
-
-
-
-
-## API Endpoints
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/health` | GET | Health check |
-| `/predict` | POST | Predict disease from image |
-| `/classes` | GET | Get list of all disease classes |
